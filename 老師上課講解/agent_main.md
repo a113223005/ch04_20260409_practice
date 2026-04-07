@@ -1,32 +1,32 @@
 ---
-功能名稱: 教學示範：手搖飲 Agent 專案主控制檔
-版本編號: v1.0.0
+功能名稱: 英雄茶屋智慧 Agent 主控台 (System Map)
+版本編號: v1.0.1
 修改日期: 2026-03-28
-描述: 本檔案用於管理與鏈結所有模組化的 Agent 組件。
+功能類型: 系統管理地圖
+內容描述: 負責連結與管理所有大腦規劃組件 (P-R-W-S) 之入口文件。
 ---
 
-# 🚀 手搖飲 Agent 專案：主控制台 (Entry Point)
+# 專案主控台：英雄茶屋智慧 Agent 系統
 
-歡迎來到本專案的「大腦入口」。為了保持專案的高度維護性，我們將 Agent 拆分為多個核心模組：
+本文件為專案的「思維入口」，負責鏈結 `.agent/` 目錄下的所有核心規劃組件（P-R-W-S）。系統將依據此地圖讀取對應之性格、規則與流程。
 
-## 👤 身份與性格 (Persona)
-*   **檔案連結**：[./.agent/persona.md](./.agent/persona.md)
-*   **內容包含**：資深店務經理的身分、說話風格、特殊背景。
+## 1. 角色設定 (Persona)
 
-## 🛡️ 業務規範 (Rules)
-*   **檔案連結**：[./.agent/rules.md](./.agent/rules.md)
-*   **內容包含**：甜度冰塊必選、熱飲珍珠提醒、外送範圍限制。
+* [./.agent/persona.md](./.agent/persona.md)
+* **內容包含**：明確店長的身份、溝通風格與品牌背景。
 
-## 🛠️ 功能與技能 (Skills)
-*   **檔案連結**：[./.agent/skills.md](./.agent/skills.md)
-*   **內容包含**：金額加總、庫存同步、氣象建議計算。
+## 2. 業務規則 (Rules)
 
-## 🔄 任務工作流 (Workflows)
-*   **檔案連結**：[./.agent/workflows/order_beverage.md](./.agent/workflows/order_beverage.md)
-*   **內容包含**：訂單接收流程、庫存檢查邏輯、最終金額確認路徑。
+* [./.agent/rules/topping_limit.md](./.agent/rules/topping_limit.md) (熱飲限制規則)
+* **內容包含**：飲品規格邏輯、品質攔截與訂購門檻。
 
----
+## 3. 實作能力 (Skills)
 
-### 💡 教學提示：如何使用本檔案？
-*   **學生操作**：請學生在 GitHub 上開啟此檔案時，應能透過連結快速跳轉至各個模組中，這能展現他們具備「模組化設計」的能力。
-*   **開發者思維**：這就像是程式的主入口（Main function），讓您可以一目了然整個 Agent 的運作結構。
+* [./.agent/skills/](./.agent/skills/) (實作能力組件資料夾)
+* **核心範例**：[calculate_total.md](./.agent/skills/calculate_total.md) (訂單金額運算規格)
+* **內容包含**：金額加總、庫存同步與外部環境偵測。
+
+## 4. 運作流程 (Workflows)
+
+* [./.agent/workflows/order_beverage.md](./.agent/workflows/order_beverage.md) (點餐標準程序)
+* **內容包含**：標準點餐 SOP、決策路徑與異常應對流程。

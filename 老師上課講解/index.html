@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英雄茶屋 HERO TEA - 頂級手搖點餐</title>
+    <!-- 引入 Google Fonts 字體 -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-amber: #BC6C25; /* 深琥珀 */
-            --light-amber: #DDA15E;   /* 淺琥珀 */
-            --matcha-green: #606C38;  /* 抹茶綠 */
-            --bg-glass: rgba(255, 255, 255, 0.25);
-            --text-main: #283618;
-            --white: #FEFAE0;
+            --primary-amber: #BC6C25; /* 深琥珀色：用於標題與重要文字 */
+            --light-amber: #DDA15E;   /* 淺琥珀色：用於輔助裝飾 */
+            --matcha-green: #606C38;  /* 抹茶綠：品牌主題色 */
+            --bg-glass: rgba(255, 255, 255, 0.25); /* 毛玻璃背景效果 */
+            --text-main: #283618;    /* 主要文字顏色 */
+            --white: #FEFAE0;        /* 象牙白：背景基色 */
         }
 
         * { box-sizing: border-box; }
 
         body {
             font-family: 'Outfit', 'Microsoft JhengHei', sans-serif;
+            /* 使用漸層背景營造品牌氛圍 */
             background: linear-gradient(160deg, #606C38 0%, #283618 100%);
             margin: 0;
             padding: 0;
@@ -29,7 +31,7 @@
             color: var(--text-main);
         }
 
-        /* 模擬手機外殼 */
+        /* 模擬手機外殼容器 */
         .phone-mockup {
             width: 380px;
             height: 750px;
@@ -41,221 +43,214 @@
             padding: 20px;
         }
 
-        /* 標題區 */
-        header {
-            text-align: center;
-            padding: 20px 0;
+        /* 頂部標題區區塊 */
+        header { text-align: center; padding: 20px 0; }
+        h1 { color: var(--primary-amber); font-size: 28px; letter-spacing: 2px; margin: 0; }
+        
+        /* Persona 展示區域：呈現店長的專業語氣 */
+        .persona-header { 
+            padding: 15px; 
+            border-radius: 20px; 
+            margin: 15px 0; 
+            font-size: 13px; 
+            border-left: 4px solid var(--matcha-green); 
+            background: rgba(96, 108, 56, 0.1); 
         }
 
-        h1 {
-            color: var(--primary-amber);
-            font-size: 28px;
-            letter-spacing: 2px;
-            margin: 0;
+        /* 品項列表標題 */
+        .section-title { font-weight: 600; font-size: 18px; margin: 20px 0 10px; }
+        
+        /* 飲品卡片網格布局 */
+        .drink-grid { display: grid; gap: 15px; }
+        
+        /* 個別飲品卡片樣式 */
+        .drink-card { 
+            background: white; 
+            border-radius: 25px; 
+            padding: 15px; 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            border: 2px solid transparent; 
         }
-
-        .persona-header {
-            background: rgba(96, 108, 56, 0.1);
-            padding: 15px;
-            border-radius: 20px;
-            margin: 15px 0;
-            font-size: 13px;
-            line-height: 1.6;
-            border-left: 4px solid var(--matcha-green);
+        
+        /* 卡片選取狀態 */
+        .drink-card.active { border-color: var(--primary-amber); background: #FFF9F2; }
+        
+        /* 飲品圖片佔位符 */
+        .drink-img { 
+            width: 70px; 
+            height: 70px; 
+            background: #F2F2F2; 
+            border-radius: 18px; 
+            margin-right: 15px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 18px; 
+            font-weight: bold;
+            color: var(--matcha-green);
         }
-
-        /* 品項卡片區 */
-        .section-title {
-            font-weight: 600;
-            font-size: 18px;
-            margin: 20px 0 10px;
-        }
-
-        .drink-grid {
-            display: grid;
-            gap: 15px;
-        }
-
-        .drink-card {
-            background: white;
-            border-radius: 25px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 2px solid transparent;
-        }
-
-        .drink-card.active {
-            border-color: var(--primary-amber);
-            background: #FFF9F2;
-        }
-
-        .drink-img {
-            width: 70px;
-            height: 70px;
-            background: #F2F2F2;
-            border-radius: 18px;
-            margin-right: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-        }
-
+        
+        /* 飲品資訊文字 */
         .drink-info h3 { margin: 0; font-size: 16px; }
         .drink-info p { margin: 5px 0 0; color: var(--primary-amber); font-weight: 600; }
 
-        /* 配置區 - 毛玻璃效果 */
-        .config-overlay {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+        /* 配置區塊：選擇甜度與冰塊 */
+        .config-overlay { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(10px); 
+            border-radius: 30px; 
+            padding: 20px; 
+            margin-top: 20px; 
         }
-
-        select, input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #DDD;
-            margin-bottom: 10px;
-            font-family: inherit;
+        
+        select, input { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 12px; 
+            border: 1px solid #DDD; 
+            margin-bottom: 10px; 
+            font-family: inherit; 
         }
-
-        .btn-checkout {
-            background: var(--matcha-green);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 18px;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-            box-shadow: 0 10px 20px rgba(96, 108, 56, 0.3);
+        
+        /* 送單按鈕樣式 */
+        .btn-checkout { 
+            background: var(--matcha-green); 
+            color: white; 
+            border: none; 
+            width: 100%; 
+            padding: 18px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 15px; 
         }
-
-        #feedback-area {
-            background: #283618;
-            color: white;
-            padding: 15px;
-            border-radius: 15px;
-            margin-top: 15px;
-            font-size: 13px;
-            display: none;
-            animation: slideUp 0.4s;
+        
+        /* 回饋顯示區域 */
+        #feedback-area { 
+            background: #283618; 
+            color: white; 
+            padding: 15px; 
+            border-radius: 15px; 
+            margin-top: 15px; 
+            font-size: 13px; 
+            display: none; 
         }
-
-        @keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="phone-mockup">
+    <!-- 頂部標題與店長問候 -->
     <header>
         <h1>HERO TEA</h1>
         <div class="persona-header">
-            <strong>👨‍💼 店務經理說：</strong><br>
-            您好！我們選用頂級原葉茶，為您沖泡每一杯英雄之味。今天想嘗試哪一款經典呢？
+            <strong>店務經理：</strong>您好！歡迎光臨英雄茶屋，我是店長，很高興能為您提供專業的茶飲規劃建議。
         </div>
     </header>
 
-    <div class="section-title">經典推薦菜单</div>
+    <div class="section-title">經典菜單</div>
+    
+    <!-- 飲品清單區 -->
     <div class="drink-grid">
+        <!-- 品項：英雄紅茶 (移除了 emoji) -->
         <div class="drink-card" onclick="selectDrink('英雄紅茶', 40, this)">
-            <div class="drink-img">☕</div>
+            <div class="drink-img">TEA</div>
             <div class="drink-info">
                 <h3>英雄紅茶</h3>
                 <p>NT$ 40</p>
             </div>
         </div>
+        
+        <!-- 品項：珍珠鮮奶茶 (移除了 emoji) -->
         <div class="drink-card" onclick="selectDrink('珍珠鮮奶茶', 55, this)">
-            <div class="drink-img">🧋</div>
+            <div class="drink-img">MILK</div>
             <div class="drink-info">
                 <h3>珍珠鮮奶茶</h3>
                 <p>NT$ 55</p>
             </div>
         </div>
-        <div class="drink-card" onclick="selectDrink('琥珀青茶奶蓋', 60, this)">
-            <div class="drink-img">🥛</div>
-            <div class="drink-info">
-                <h3>琥珀青茶奶蓋</h3>
-                <p>NT$ 60</p>
-            </div>
-        </div>
     </div>
 
+    <!-- 選單配置區 -->
     <div class="config-overlay">
-        <div style="font-weight: 600; margin-bottom: 10px;">客製化調整 (Rules)</div>
+        <!-- 甜度選擇 -->
         <select id="sugar">
-            <option value="">選擇甜度 (必填)</option>
+            <option value="">選擇甜度</option>
             <option value="全糖">全糖</option>
-            <option value="半糖">半糖</option>
+            <option value="七分糖">七分糖</option>
+            <option value="五分糖">五分糖</option>
+            <option value="三分糖">三分糖</option>
             <option value="無糖">無糖</option>
         </select>
+        
+        <!-- 冰塊選擇 -->
         <select id="ice">
-            <option value="">選擇冰塊 (必填)</option>
+            <option value="">選擇冰塊</option>
             <option value="正常冰">正常冰</option>
+            <option value="少冰">少冰</option>
             <option value="微冰">微冰</option>
+            <option value="去冰">去冰</option>
             <option value="熱飲">熱飲</option>
         </select>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <input type="checkbox" id="topping" style="width: auto; margin:0;">
-            <label for="topping" style="font-size: 13px;">加蜂蜜珍珠 (+NT$10)</label>
-        </div>
-
+        
+        <!-- 送出按鈕 -->
         <button class="btn-checkout" onclick="checkout()">確認送單</button>
         
+        <!-- 訂單結果顯示 -->
         <div id="feedback-area"></div>
     </div>
 </div>
 
 <script>
-    let selectedDrink = null;
+    // 定義全局變數紀錄選擇的品項與價格
+    let selectedDrink = null; 
     let basePrice = 0;
 
+    /**
+     * 選擇飲品功能的處理函數
+     * @param {string} name - 飲品名稱
+     * @param {number} price - 飲品價格
+     * @param {HTMLElement} element - 點擊的 HTML 元素
+     */
     function selectDrink(name, price, element) {
-        selectedDrink = name;
+        selectedDrink = name; 
         basePrice = price;
+        
+        // 移除其他項目的選取樣式並為當前項加上樣式
         document.querySelectorAll('.drink-card').forEach(c => c.classList.remove('active'));
         element.classList.add('active');
     }
 
+    /**
+     * 執行結帳送單功能的處理函數 (落實 Rules 與 Persona)
+     */
     function checkout() {
         const sugar = document.getElementById('sugar').value;
         const ice = document.getElementById('ice').value;
-        const hasTopping = document.getElementById('topping').checked;
         const feedback = document.getElementById('feedback-area');
 
-        // --- Rules 實作 ---
-        if (!selectedDrink) { alert("⚠️ 請先挑選您想喝的英雄品項！"); return; }
-        if (!sugar || !ice) { alert("⚠️ 店長溫馨提示：別忘了調整您的甜度與冰塊喔！"); return; }
-        
-        if (ice === "熱飲" && hasTopping) {
-            alert("⚠️ 專業提醒：熱飲加珍珠會使珍珠口感變軟，還是要幫您加入嗎？");
+        // 規則檢核 (Rules)：確認所有選項皆已選取
+        if (!selectedDrink || !sugar || !ice) { 
+            alert("店長溫馨提示：請務必完整選擇您的品項、甜度與冰塊，以便為您精準製作。"); 
+            return; 
         }
 
-        // --- Skills 實作 ---
-        let total = basePrice + (hasTopping ? 10 : 0);
-
-        // --- Persona 實作 ---
+        // 顯示結果視窗
         feedback.style.display = "block";
+        
+        // 產出結果 (符合 Persona 的語氣)
         feedback.innerHTML = `
-            <strong>✨ 訂單已成功送達！</strong><br>
+            <strong>訂單預覽成功：</strong><br>
             品項：${selectedDrink}<br>
-            設定：${sugar} / ${ice}<br>
-            加料：${hasTopping ? '蜂蜜珍珠' : '無'}<br>
-            <strong>總計：NT$ ${total}</strong><br><br>
-            <em>太棒了！店長正在親自為您沖泡中，請稍候！</em>
+            狀態：已標記為 ${sugar} / ${ice}<br>
+            總計：NT$ ${basePrice}<br>
+            <em>您專業的訂單已收到，店長正在親自為您沖泡中，請稍候！</em>
         `;
     }
 </script>
-
 </body>
 </html>
