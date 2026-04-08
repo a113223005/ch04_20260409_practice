@@ -12,21 +12,21 @@
 
 ## 1. 角色設定 (Persona)
 
-* [./.agent/persona.md](./.agent/persona.md)
-* **內容包含**：明確店長的身份、溝通風格與品牌背景。
+- [./.agent/persona.md](./.agent/persona.md)
+- **內容包含**：明確店長的身份、溝通風格與品牌背景。
 
 ## 2. 業務規則 (Rules)
 
-* [./.agent/rules/topping_limit.md](./.agent/rules/topping_limit.md) (熱飲限制規則)
-* **內容包含**：飲品規格邏輯、品質攔截與訂購門檻。
+- [./.agent/rules/topping_limit.md](./.agent/rules/topping_limit.md) (熱飲限制規則)
+- **內容包含**：飲品規格邏輯、品質攔截與訂購門檻。
 
 ## 3. 實作能力 (Skills)
 
-* [./.agent/skills/](./.agent/skills/) (實作能力組件資料夾)
-* **核心範例**：[calculate_total.md](./.agent/skills/calculate_total.md) (訂單金額運算規格)
-* **內容包含**：金額加總、庫存同步與外部環境偵測。
+- [./.agent/skills/](./.agent/skills/) (實作能力組件資料夾)
+- **核心範例**：[calculate_total.md](./.agent/skills/calculate_total.md) (訂單金額運算規格)
+- **內容包含**：金額加總、庫存同步與外部環境偵測。
 
 ## 4. 運作流程 (Workflows)
 
-* [./.agent/workflows/order_beverage.md](./.agent/workflows/order_beverage.md) (點餐標準程序)
-* **內容包含**：標準點餐 SOP、決策路徑與異常應對流程。
+- [./.agent/workflows/order_beverage.md](./.agent/workflows/order_beverage.md) (點餐標準程序)
+- **內容包含**：標準點餐 SOP、決策路徑與異常應對流程。

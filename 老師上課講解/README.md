@@ -33,13 +33,13 @@
 
 ## 快速開始
 
-* 如果您是老師：請從 `20260409課程.md` 開始導讀。
-* 如果您是學生：請參考 `drink_agent_design.md` 的結構來完成您的作業。
+- 如果您是老師：請從 `20260409課程.md` 開始導讀。
+- 如果您是學生：請參考 `drink_agent_design.md` 的結構來完成您的作業。
 
 ---
 
 ### 版本資訊
 
-* **Version**: v1.1.0
-* **Last Updated**: 2026-03-28
-* **Author**: 教學助手 Agent
+- **Version**: v1.1.0
+- **Last Updated**: 2026-03-28
+- **Author**: 教學助手 Agent
