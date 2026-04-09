@@ -1,19 +1,49 @@
+---
+功能名稱: README.md
+版本編號: v1.1.0
+修改日期: 2026-04-09
+功能類型: 專案內容說明
+---
+
 # AI Agent 驅動：手搖飲 APP 規劃教學專案
 
 ## 專案簡介
 
-本專案專為「新手小白」設計，旨在透過 AI Agent 的思維來規劃與設計一項手搖飲訂購 APP。專案中包含了完整的 P-R-W-S (Persona, Rules, Workflow, Skills) 架構範本、有無 Agent 的對比分析，以及供學生練習用的知識點。
+本專案專為學習AI Agent設計開發專用，旨在透過 AI Agent 的思維來規劃與設計一項手搖飲訂購 APP。專案中包含了完整的 P-R-W-S (Persona, Rules, Workflow, Skills) 架構範本、有無 Agent 的對比分析，以及供學生練習用的知識點。
 
 ---
 
 ## 檔案目錄說明
 
-1. [20260409課程.md](./20260409課程.md)：**核心講義**，包含對照分析與全系列課後練習題庫。
+1. [20260409課程.md](./20260409課程.md)：**核心講義**，以情境式專案設計，讓學生知如何進行Agent的規畫。
 2. [agent_main.md](./agent_main.md)：**專案主控制台**，鏈結各個 Agent 模組的入口。
-3. [.agent/](./.agent/)：**核心配置資料夾**，內含 Persona、Rules、Skills、Workflows 子目錄。
-4. [drink_agent_design.md](./drink_agent_design.md)：手搖飲 Agent 的單檔實戰範例。
-5. [lesson_agent_app_design.md](./lesson_agent_app_design.md)：設計邏輯與方法論指引。
-6. [index.html](./index.html)：**最終實作網頁**，將 Agent 邏輯轉化為實際的點餐 UI。
+3. [.agent/](./.agent/)：**核心配置資料夾**，內含 Persona、Rules、Skills、Workflows、Knowledge 子目錄。
+4. [index.html](./index.html)：**專案產出 App**，透過 AI Agent 規則建構的天下茶屋智慧點餐系統。
+
+---
+
+## 最新 Agent 規則狀態 (2026-04-09 更新)
+
+本專案最新的 `.agent` 業務規則 (Rules) 包含：
+- **熱飲加料限制 (`topping_limit.md`)**：熱飲 (Hot) 狀態下禁止加購珍珠，而去冰、微冰、全冰等狀態皆允許加購。
+- **外送運費與距離限制 (`distance_limit.md`)**：
+  - 距離 > 5 公里：拒絕外送服務。
+  - 距離 2~5 公里：若訂單未滿 $300，則加收 $50 運費。
+  - 距離 <= 2 公里：正常提供服務且免運費。
+
+---
+
+## 產品知識庫清單 (Knowledge)
+
+本專案使用 `.agent/knowledge/product_list.md` 作為系統的產品資料庫：
+
+| 品項代碼 (ID) | 產品名稱 (Name) | 基礎單價 (Price) | 類別 (Category) |
+| :--- | :--- | :--- | :--- |
+| **TEA_RED** | 天下紅茶 | 40 | 純茶類 |
+| **TEA_GRN** | 天下綠茶 | 35 | 純茶類 |
+| **MILK_TEA** | 特調奶茶 | 55 | 調合類 |
+| **TOP_BOBA** | 珍珠 | 10 | 配料 |
+| **TOP_JELLY** | 椰果 | 10 | 配料 |
 
 ---
 
@@ -27,19 +57,8 @@
 4. **協作規則 (Contribution)**：如果你希望別人參與開發，README 會說明如何提交程式碼或報告錯誤。
 5. **版權資訊 (License)**：標註此專案的開源協議（如 MIT, Apache）。
 
-**「總結」：對於學生來說，寫好 README.md 是展現「專業素養」的第一步，能讓老師或招募官一眼看懂專案的價值。**
+**「總結」：對於學生來說，寫好 README.md 是展現「專業素養」的第一步，能流覽你專案的人一眼看懂專案的價值。**
 
 ---
 
-## 快速開始
 
-- 如果您是老師：請從 `20260409課程.md` 開始導讀。
-- 如果您是學生：請參考 `drink_agent_design.md` 的結構來完成您的作業。
-
----
-
-### 版本資訊
-
-- **Version**: v1.1.0
-- **Last Updated**: 2026-03-28
-- **Author**: 教學助手 Agent
