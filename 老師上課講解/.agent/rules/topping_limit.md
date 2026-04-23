@@ -1,5 +1,5 @@
 ---
-trigger: manual
+trigger: model_decision
 ---
 
 # 業務規則：產品點購合規檢驗 (Order Rules)
