@@ -1,663 +1,963 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>天下茶屋 | 智慧點餐系統</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<style>
-:root {
-  --green-dark: #1a3a1a;
-  --green-main: #2d5a2d;
-  --green-light: #4a8a4a;
-  --gold: #c9a84c;
-  --gold-light: #f0d080;
-  --cream: #faf7f2;
-  --card: #ffffff;
-  --text: #1e1e1e;
-  --muted: #888;
-  --error: #e53e3e;
-  --success: #2d5a2d;
-  --radius: 18px;
-  --shadow: 0 8px 32px rgba(0,0,0,0.10);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans TC', sans-serif; }
-body {
-  background: linear-gradient(135deg, #e8f5e8 0%, #faf7f2 50%, #e8f0ff 100%);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 20px;
-}
-.app {
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  animation: fadeUp .7s ease;
-}
-@keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天下茶屋 | 智慧點餐系統</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --green-dark: #1a3a1a;
+      --green-main: #2d5a2d;
+      --green-light: #4a8a4a;
+      --gold: #c9a84c;
+      --gold-light: #f0d080;
+      --cream: #faf7f2;
+      --card: #ffffff;
+      --text: #1e1e1e;
+      --muted: #888;
+      --error: #e53e3e;
+      --success: #2d5a2d;
+      --radius: 18px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+    }
 
-/* ── HEADER ── */
-.header {
-  background: linear-gradient(160deg, var(--green-dark) 0%, var(--green-main) 100%);
-  border-radius: var(--radius) var(--radius) 0 0;
-  padding: 28px 24px 36px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.header::before {
-  content: '茶';
-  position: absolute; top: -20px; right: -10px;
-  font-size: 120px; font-weight: 900;
-  color: rgba(255,255,255,0.04);
-  pointer-events: none;
-}
-.brand { font-size: 1.6rem; font-weight: 900; color: #fff; letter-spacing: 4px; }
-.brand span { color: var(--gold-light); }
-.tagline { font-size: .82rem; color: rgba(255,255,255,.65); margin-top: 4px; font-weight: 300; letter-spacing: 1px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+    }
 
-/* Weather */
-.weather-chip {
-  margin-top: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,.13);
-  border: 1px solid rgba(255,255,255,.22);
-  border-radius: 50px;
-  padding: 7px 18px;
-  font-size: .82rem;
-  color: #fff;
-  backdrop-filter: blur(6px);
-  min-height: 36px;
-  transition: all .3s;
-}
-.weather-chip.loading { opacity: .6; font-style: italic; }
-.weather-chip.error { background: rgba(220,50,50,.2); border-color: rgba(220,50,50,.4); }
-.w-temp { font-weight: 700; font-size: .95rem; }
-.w-sep { opacity: .4; }
-.city-row {
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
-.city-input {
-  background: rgba(255,255,255,.15);
-  border: 1px solid rgba(255,255,255,.3);
-  border-radius: 50px;
-  padding: 6px 16px;
-  color: #fff;
-  font-size: .8rem;
-  outline: none;
-  width: 155px;
-  transition: all .25s;
-  font-family: inherit;
-}
-.city-input::placeholder { color: rgba(255,255,255,.5); }
-.city-input:focus { background: rgba(255,255,255,.25); width: 190px; border-color: rgba(255,255,255,.6); }
-.city-btn {
-  background: rgba(255,255,255,.2);
-  border: 1px solid rgba(255,255,255,.3);
-  border-radius: 50px;
-  padding: 6px 16px;
-  color: #fff;
-  font-size: .8rem;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 500;
-  margin-top: 0;
-  letter-spacing: 0;
-  transition: all .2s;
-}
-.city-btn:hover { background: rgba(255,255,255,.32); transform: translateY(-1px); box-shadow: none; }
-.city-btn:active { transform: none; }
+    body {
+      background: linear-gradient(135deg, #e8f5e8 0%, #faf7f2 50%, #e8f0ff 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
 
-/* ── BODY ── */
-.body {
-  background: var(--card);
-  border-radius: 0 0 var(--radius) var(--radius);
-  padding: 28px 24px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
+    .app {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      animation: fadeUp .7s ease;
+    }
 
-/* Section label */
-.sec-label {
-  font-size: .72rem;
-  font-weight: 700;
-  color: var(--green-main);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
 
-/* Product cards */
-.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.product-card {
-  border: 2px solid #eee;
-  border-radius: 14px;
-  padding: 14px 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .25s;
-  background: var(--cream);
-  user-select: none;
-}
-.product-card:hover { border-color: var(--green-light); transform: translateY(-2px); }
-.product-card.selected {
-  border-color: var(--green-main);
-  background: #e8f5e8;
-  box-shadow: 0 0 0 3px rgba(45,90,45,.12);
-}
-.product-card.selected .p-price { color: var(--green-main); }
-.p-emoji { font-size: 1.8rem; }
-.p-name { font-size: .78rem; font-weight: 700; margin-top: 6px; color: var(--text); }
-.p-price { font-size: .75rem; color: var(--muted); margin-top: 2px; }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
 
-/* Options row */
-.opts-row { display: flex; gap: 10px; }
-.form-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-.form-group label { font-size: .78rem; font-weight: 500; color: var(--muted); }
-select, input[type="number"], input[type="text"] {
-  padding: 11px 14px;
-  border-radius: 12px;
-  border: 1.5px solid #e0e0e0;
-  font-size: .92rem;
-  background: var(--cream);
-  outline: none;
-  transition: all .25s;
-  font-family: inherit;
-  color: var(--text);
-  width: 100%;
-}
-select:focus, input:focus { border-color: var(--green-main); background: #fff; box-shadow: 0 0 0 3px rgba(45,90,45,.1); }
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(160deg, var(--green-dark) 0%, var(--green-main) 100%);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 28px 24px 36px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
 
-/* Qty stepper */
-.qty-row { display: flex; align-items: center; gap: 0; border: 1.5px solid #e0e0e0; border-radius: 12px; overflow: hidden; background: var(--cream); }
-.qty-btn {
-  width: 40px; height: 44px;
-  background: none; border: none;
-  font-size: 1.2rem; cursor: pointer;
-  color: var(--green-main); font-weight: 700;
-  transition: background .2s;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  margin: 0; padding: 0;
-  border-radius: 0;
-  letter-spacing: 0;
-}
-.qty-btn:hover { background: #e8f5e8; transform: none; box-shadow: none; }
-.qty-btn:active { transform: none; }
-.qty-val { flex: 1; text-align: center; font-size: .95rem; font-weight: 700; color: var(--text); }
+    .header::before {
+      content: '茶';
+      position: absolute;
+      top: -20px;
+      right: -10px;
+      font-size: 120px;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.04);
+      pointer-events: none;
+    }
 
-/* Toppings */
-.topping-grid { display: flex; gap: 10px; }
-.topping-item {
-  flex: 1;
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px;
-  border: 1.5px solid #eee;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all .2s;
-  font-size: .85rem;
-}
-.topping-item:hover { border-color: var(--green-light); }
-.topping-item.checked { border-color: var(--green-main); background: #e8f5e8; }
-.topping-item input { accent-color: var(--green-main); width: 15px; height: 15px; cursor: pointer; }
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 4px;
+    }
 
-/* Divider */
-.divider { height: 1px; background: #f0f0f0; }
+    .brand span {
+      color: var(--gold-light);
+    }
 
-/* Submit btn */
-.submit-btn {
-  background: linear-gradient(135deg, var(--green-main), var(--green-dark));
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  padding: 16px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 1px;
-  transition: all .3s;
-  margin: 0;
-  position: relative;
-  overflow: hidden;
-}
-.submit-btn::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: rgba(255,255,255,0);
-  transition: background .2s;
-}
-.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(45,90,45,.35); }
-.submit-btn:active { transform: none; box-shadow: none; }
+    .tagline {
+      font-size: .82rem;
+      color: rgba(255, 255, 255, .65);
+      margin-top: 4px;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
 
-/* Progress bar */
-.progress-wrap { display: none; }
-.progress-wrap.show { display: block; }
-.progress-steps {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-.step-dot {
-  font-size: .7rem;
-  color: var(--muted);
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  transition: color .3s;
-}
-.step-dot .dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; transition: background .3s; }
-.step-dot.active { color: var(--green-main); }
-.step-dot.active .dot { background: var(--green-main); }
-.step-dot.done { color: var(--green-light); }
-.step-dot.done .dot { background: var(--green-light); }
-.progress-bar-bg { height: 4px; background: #eee; border-radius: 2px; }
-.progress-bar-fill { height: 100%; background: var(--green-main); border-radius: 2px; transition: width .5s ease; }
+    /* Weather */
+    .weather-chip {
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, .13);
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 50px;
+      padding: 7px 18px;
+      font-size: .82rem;
+      color: #fff;
+      backdrop-filter: blur(6px);
+      min-height: 36px;
+      transition: all .3s;
+    }
 
-/* Result cards */
-.result { margin-top: 4px; }
-.alert-err {
-  background: #fff5f5;
-  border: 1.5px solid #feb2b2;
-  border-radius: 14px;
-  padding: 16px 18px;
-  color: var(--error);
-  font-size: .88rem;
-  line-height: 1.6;
-  animation: fadeUp .35s ease;
-}
-.alert-err strong { display: block; font-size: 1rem; margin-bottom: 4px; }
-.order-card {
-  background: linear-gradient(145deg, #f9fffe, var(--cream));
-  border: 1.5px solid #d4e8d4;
-  border-radius: 16px;
-  padding: 20px;
-  animation: fadeUp .4s ease;
-}
-.order-card h3 { font-size: .95rem; color: var(--green-dark); margin-bottom: 14px; font-weight: 700; }
-.order-row {
-  display: flex; justify-content: space-between;
-  font-size: .88rem;
-  padding: 5px 0;
-  border-bottom: 1px solid #eee;
-  color: var(--text);
-}
-.order-row:last-of-type { border: none; }
-.order-row.total {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--green-dark);
-  border-top: 1.5px solid #d4e8d4;
-  margin-top: 8px;
-  padding-top: 12px;
-  border-bottom: none;
-}
-.order-row.promo { color: var(--green-main); }
-.order-row.ship { color: #e67e22; }
-.badge {
-  display: inline-block;
-  background: var(--green-main); color: #fff;
-  border-radius: 50px; padding: 3px 12px;
-  font-size: .72rem; font-weight: 700;
-  letter-spacing: .5px; margin-bottom: 10px;
-}
-.notice-line {
-  margin-top: 14px;
-  background: #f0f9ff;
-  border: 1px solid #bee3f8;
-  border-radius: 12px;
-  padding: 14px;
-  font-size: .85rem;
-  color: #2b6cb0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  animation: fadeUp .5s ease;
-}
-.notice-header { display: flex; align-items: center; gap: 8px; font-weight: 700; }
-.notice-body { background: rgba(255,255,255,0.6); padding: 10px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; color: #1a365d; border: 1px dashed #bee3f8; }
-.copy-btn {
-  align-self: flex-end;
-  background: #3182ce;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 12px;
-  font-size: .75rem;
-  cursor: pointer;
-  transition: background .2s;
-}
-.copy-btn:hover { background: #2b6cb0; }
+    .weather-chip.loading {
+      opacity: .6;
+      font-style: italic;
+    }
 
-.hot-warn {
-  margin-top: 10px;
-  background: #fffaf0;
-  border: 1px solid #f6c84e;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: .82rem;
-  color: #b7791f;
-  display: flex; align-items: center; gap: 8px;
-}
-</style>
+    .weather-chip.error {
+      background: rgba(220, 50, 50, .2);
+      border-color: rgba(220, 50, 50, .4);
+    }
+
+    .w-temp {
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    .w-sep {
+      opacity: .4;
+    }
+
+    .city-row {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .city-input {
+      background: rgba(255, 255, 255, .15);
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 50px;
+      padding: 6px 16px;
+      color: #fff;
+      font-size: .8rem;
+      outline: none;
+      width: 155px;
+      transition: all .25s;
+      font-family: inherit;
+    }
+
+    .city-input::placeholder {
+      color: rgba(255, 255, 255, .5);
+    }
+
+    .city-input:focus {
+      background: rgba(255, 255, 255, .25);
+      width: 190px;
+      border-color: rgba(255, 255, 255, .6);
+    }
+
+    .city-btn {
+      background: rgba(255, 255, 255, .2);
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 50px;
+      padding: 6px 16px;
+      color: #fff;
+      font-size: .8rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      margin-top: 0;
+      letter-spacing: 0;
+      transition: all .2s;
+    }
+
+    .city-btn:hover {
+      background: rgba(255, 255, 255, .32);
+      transform: translateY(-1px);
+      box-shadow: none;
+    }
+
+    .city-btn:active {
+      transform: none;
+    }
+
+    /* ── BODY ── */
+    .body {
+      background: var(--card);
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Section label */
+    .sec-label {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--green-main);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    /* Product cards */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .product-card {
+      border: 2px solid #eee;
+      border-radius: 14px;
+      padding: 14px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .25s;
+      background: var(--cream);
+      user-select: none;
+    }
+
+    .product-card:hover {
+      border-color: var(--green-light);
+      transform: translateY(-2px);
+    }
+
+    .product-card.selected {
+      border-color: var(--green-main);
+      background: #e8f5e8;
+      box-shadow: 0 0 0 3px rgba(45, 90, 45, .12);
+    }
+
+    .product-card.selected .p-price {
+      color: var(--green-main);
+    }
+
+    .p-emoji {
+      font-size: 1.8rem;
+    }
+
+    .p-name {
+      font-size: .78rem;
+      font-weight: 700;
+      margin-top: 6px;
+      color: var(--text);
+    }
+
+    .p-price {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Options row */
+    .opts-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .form-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: .78rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    select,
+    input[type="number"],
+    input[type="text"] {
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #e0e0e0;
+      font-size: .92rem;
+      background: var(--cream);
+      outline: none;
+      transition: all .25s;
+      font-family: inherit;
+      color: var(--text);
+      width: 100%;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: var(--green-main);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(45, 90, 45, .1);
+    }
+
+    /* Qty stepper */
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--cream);
+    }
+
+    .qty-btn {
+      width: 40px;
+      height: 44px;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--green-main);
+      font-weight: 700;
+      transition: background .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin: 0;
+      padding: 0;
+      border-radius: 0;
+      letter-spacing: 0;
+    }
+
+    .qty-btn:hover {
+      background: #e8f5e8;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .qty-btn:active {
+      transform: none;
+    }
+
+    .qty-val {
+      flex: 1;
+      text-align: center;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Toppings */
+    .topping-grid {
+      display: flex;
+      gap: 10px;
+    }
+
+    .topping-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1.5px solid #eee;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all .2s;
+      font-size: .85rem;
+    }
+
+    .topping-item:hover {
+      border-color: var(--green-light);
+    }
+
+    .topping-item.checked {
+      border-color: var(--green-main);
+      background: #e8f5e8;
+    }
+
+    .topping-item input {
+      accent-color: var(--green-main);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: #f0f0f0;
+    }
+
+    /* Submit btn */
+    .submit-btn {
+      background: linear-gradient(135deg, var(--green-main), var(--green-dark));
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all .3s;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0);
+      transition: background .2s;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(45, 90, 45, .35);
+    }
+
+    .submit-btn:active {
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      display: none;
+    }
+
+    .progress-wrap.show {
+      display: block;
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .step-dot {
+      font-size: .7rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: color .3s;
+    }
+
+    .step-dot .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ddd;
+      transition: background .3s;
+    }
+
+    .step-dot.active {
+      color: var(--green-main);
+    }
+
+    .step-dot.active .dot {
+      background: var(--green-main);
+    }
+
+    .step-dot.done {
+      color: var(--green-light);
+    }
+
+    .step-dot.done .dot {
+      background: var(--green-light);
+    }
+
+    .progress-bar-bg {
+      height: 4px;
+      background: #eee;
+      border-radius: 2px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--green-main);
+      border-radius: 2px;
+      transition: width .5s ease;
+    }
+
+    /* Result cards */
+    .result {
+      margin-top: 4px;
+    }
+
+    .alert-err {
+      background: #fff5f5;
+      border: 1.5px solid #feb2b2;
+      border-radius: 14px;
+      padding: 16px 18px;
+      color: var(--error);
+      font-size: .88rem;
+      line-height: 1.6;
+      animation: fadeUp .35s ease;
+    }
+
+    .alert-err strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .order-card {
+      background: linear-gradient(145deg, #f9fffe, var(--cream));
+      border: 1.5px solid #d4e8d4;
+      border-radius: 16px;
+      padding: 20px;
+      animation: fadeUp .4s ease;
+    }
+
+    .order-card h3 {
+      font-size: .95rem;
+      color: var(--green-dark);
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: .88rem;
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+      color: var(--text);
+    }
+
+    .order-row:last-of-type {
+      border: none;
+    }
+
+    .order-row.total {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      border-top: 1.5px solid #d4e8d4;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-bottom: none;
+    }
+
+    .order-row.promo {
+      color: var(--green-main);
+    }
+
+    .order-row.ship {
+      color: #e67e22;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--green-main);
+      color: #fff;
+      border-radius: 50px;
+      padding: 3px 12px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      margin-bottom: 10px;
+    }
+
+    .notice-line {
+      margin-top: 14px;
+      background: #f0f9ff;
+      border: 1px solid #bee3f8;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: .85rem;
+      color: #2b6cb0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeUp .5s ease;
+    }
+
+    .notice-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    .notice-body {
+      background: rgba(255, 255, 255, 0.6);
+      padding: 10px;
+      border-radius: 8px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      color: #1a365d;
+      border: 1px dashed #bee3f8;
+    }
+
+    .copy-btn {
+      align-self: flex-end;
+      background: #3182ce;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: .75rem;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .copy-btn:hover {
+      background: #2b6cb0;
+    }
+
+    .hot-warn {
+      margin-top: 10px;
+      background: #fffaf0;
+      border: 1px solid #f6c84e;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: .82rem;
+      color: #b7791f;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
 </head>
+
 <body>
-<div class="app">
+  <div class="app">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="brand">天下<span>茶屋</span></div>
-    <div class="tagline">您好，歡迎使用天下茶屋智慧結帳系統</div>
+    <!-- HEADER -->
+    <div class="header">
+      <div class="brand">天下<span>茶屋</span></div>
+      <div class="tagline">您好，歡迎使用天下茶屋智慧結帳系統</div>
 
-    <!-- S0 Weather -->
-    <div class="weather-chip loading" id="weatherChip">⏳ 氣溫感知中...</div>
-    <div class="city-row">
-      <input class="city-input" id="cityInput" type="text" placeholder="🔍 搜尋城市（英文）"
-             onkeydown="if(event.key==='Enter')searchCity()">
-      <button class="city-btn" onclick="searchCity()">查詢</button>
+      <!-- S0 Weather -->
+      <div class="weather-chip loading" id="weatherChip">⏳ 氣溫感知中...</div>
+      <div class="city-row">
+        <input class="city-input" id="cityInput" type="text" placeholder="🔍 搜尋城市（英文）"
+          onkeydown="if(event.key==='Enter')searchCity()">
+        <button class="city-btn" onclick="searchCity()">查詢</button>
+      </div>
     </div>
+
+    <!-- BODY -->
+    <div class="body">
+
+      <!-- S1: Product -->
+      <div>
+        <div class="sec-label">選擇飲品</div>
+        <div class="product-grid">
+          <div class="product-card selected" id="card_TEA_RED" onclick="selectProduct('TEA_RED')">
+            <div class="p-emoji">🍵</div>
+            <div class="p-name">天下紅茶</div>
+            <div class="p-price">$40</div>
+          </div>
+          <div class="product-card" id="card_TEA_GRN" onclick="selectProduct('TEA_GRN')">
+            <div class="p-emoji">🌿</div>
+            <div class="p-name">天下綠茶</div>
+            <div class="p-price">$35</div>
+          </div>
+          <div class="product-card" id="card_MILK_TEA" onclick="selectProduct('MILK_TEA')">
+            <div class="p-emoji">🧋</div>
+            <div class="p-name">特調奶茶</div>
+            <div class="p-price">$55</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Options -->
+      <div class="opts-row">
+        <div class="form-group">
+          <label>溫度</label>
+          <select id="temp">
+            <option value="ice">去冰</option>
+            <option value="ice">微冰</option>
+            <option value="ice">全冰</option>
+            <option value="hot">熱飲 (Hot)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>甜度</label>
+          <select id="sugar">
+            <option value="normal">正常糖</option>
+            <option value="less">少糖</option>
+            <option value="half">半糖</option>
+            <option value="none">無糖</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Qty & Toppings -->
+      <div class="opts-row">
+        <div class="form-group">
+          <label>杯數</label>
+          <div class="qty-row">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <span class="qty-val" id="qtyVal">1</span>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>加料 (+$10/杯)</label>
+          <div class="topping-grid">
+            <label class="topping-item" id="lbl_boba" onclick="toggleTopping('boba')">
+              <input type="checkbox" id="top_boba"> 珍珠
+            </label>
+            <label class="topping-item" id="lbl_jelly" onclick="toggleTopping('jelly')">
+              <input type="checkbox" id="top_jelly"> 椰果
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Delivery & Promo -->
+      <div class="opts-row">
+        <div class="form-group">
+          <label>外送距離 (km，店取填0)</label>
+          <input type="number" id="distance" min="0" step="0.1" value="0">
+        </div>
+        <div class="form-group">
+          <label>促銷碼</label>
+          <input type="text" id="promo" placeholder="請輸入優惠碼">
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-steps">
+          <div class="step-dot" id="sd1">
+            <div class="dot"></div>需求採集
+          </div>
+          <div class="step-dot" id="sd2">
+            <div class="dot"></div>規則校驗
+          </div>
+          <div class="step-dot" id="sd3">
+            <div class="dot"></div>金額結算
+          </div>
+          <div class="step-dot" id="sd4">
+            <div class="dot"></div>訂單確認
+          </div>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="processOrder()">✓ 確認訂單</button>
+
+      <div class="result" id="result"></div>
+    </div>
+
   </div>
 
-  <!-- BODY -->
-  <div class="body">
+  <script>
+    // ── Product data ──
+    const PRODUCTS = {
+      TEA_RED: { name: '天下紅茶', price: 40, emoji: '🍵' },
+      TEA_GRN: { name: '天下綠茶', price: 35, emoji: '🌿' },
+      MILK_TEA: { name: '特調奶茶', price: 55, emoji: '🧋' }
+    };
+    let selectedProduct = 'TEA_RED';
+    let qty = 1;
+    let topBoba = false, topJelly = false;
 
-    <!-- S1: Product -->
-    <div>
-      <div class="sec-label">選擇飲品</div>
-      <div class="product-grid">
-        <div class="product-card selected" id="card_TEA_RED" onclick="selectProduct('TEA_RED')">
-          <div class="p-emoji">🍵</div>
-          <div class="p-name">天下紅茶</div>
-          <div class="p-price">$40</div>
-        </div>
-        <div class="product-card" id="card_TEA_GRN" onclick="selectProduct('TEA_GRN')">
-          <div class="p-emoji">🌿</div>
-          <div class="p-name">天下綠茶</div>
-          <div class="p-price">$35</div>
-        </div>
-        <div class="product-card" id="card_MILK_TEA" onclick="selectProduct('MILK_TEA')">
-          <div class="p-emoji">🧋</div>
-          <div class="p-name">特調奶茶</div>
-          <div class="p-price">$55</div>
-        </div>
-      </div>
-    </div>
+    function selectProduct(code) {
+      selectedProduct = code;
+      document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('card_' + code).classList.add('selected');
+    }
 
-    <div class="divider"></div>
+    function changeQty(d) {
+      qty = Math.max(1, qty + d);
+      document.getElementById('qtyVal').textContent = qty;
+    }
 
-    <!-- Options -->
-    <div class="opts-row">
-      <div class="form-group">
-        <label>溫度</label>
-        <select id="temp">
-          <option value="ice">去冰</option>
-          <option value="ice">微冰</option>
-          <option value="ice">全冰</option>
-          <option value="hot">熱飲 (Hot)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>甜度</label>
-        <select id="sugar">
-          <option value="normal">正常糖</option>
-          <option value="less">少糖</option>
-          <option value="half">半糖</option>
-          <option value="none">無糖</option>
-        </select>
-      </div>
-    </div>
+    function toggleTopping(t) {
+      if (t === 'boba') {
+        topBoba = !document.getElementById('top_boba').checked;
+        document.getElementById('top_boba').checked = topBoba;
+        document.getElementById('lbl_boba').classList.toggle('checked', topBoba);
+      } else {
+        topJelly = !document.getElementById('top_jelly').checked;
+        document.getElementById('top_jelly').checked = topJelly;
+        document.getElementById('lbl_jelly').classList.toggle('checked', topJelly);
+      }
+    }
 
-    <!-- Qty & Toppings -->
-    <div class="opts-row">
-      <div class="form-group">
-        <label>杯數</label>
-        <div class="qty-row">
-          <button class="qty-btn" onclick="changeQty(-1)">−</button>
-          <span class="qty-val" id="qtyVal">1</span>
-          <button class="qty-btn" onclick="changeQty(1)">+</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>加料 (+$10/杯)</label>
-        <div class="topping-grid">
-          <label class="topping-item" id="lbl_boba" onclick="toggleTopping('boba')">
-            <input type="checkbox" id="top_boba"> 珍珠
-          </label>
-          <label class="topping-item" id="lbl_jelly" onclick="toggleTopping('jelly')">
-            <input type="checkbox" id="top_jelly"> 椰果
-          </label>
-        </div>
-      </div>
-    </div>
+    // ── S0: Weather ──
+    async function fetchWeather(city, label) {
+      const chip = document.getElementById('weatherChip');
+      chip.className = 'weather-chip loading';
+      chip.textContent = `⏳ 查詢 ${label || city} 中...`;
+      try {
+        const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&format=json`).then(r => r.json());
+        if (!g.results?.length) throw new Error('notfound');
+        const { latitude, longitude, name } = g.results[0];
+        const cityLabel = label || name;
+        const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&timezone=auto`).then(r => r.json());
+        const temp = Math.round(w.current.temperature_2m);
+        let rec, icon;
+        if (temp > 28) { icon = '🥵'; rec = `炎熱！推薦冰涼特調奶茶 🧋`; }
+        else if (temp >= 15) { icon = '😊'; rec = `舒適！推薦天下紅茶或綠茶 🍵`; }
+        else { icon = '🥶'; rec = `微涼！推薦暖心熱紅茶 ☕`; }
+        chip.className = 'weather-chip';
+        chip.innerHTML = `<span class="w-temp">🌡️ ${cityLabel} ${temp}°C</span><span class="w-sep">｜</span><span>${icon} ${rec}</span>`;
+      } catch (e) {
+        chip.className = 'weather-chip error';
+        chip.textContent = e.message === 'notfound' ? `⚠️ 找不到「${city}」，請用英文名稱` : '⚠️ 氣溫感知失敗，請確認網路';
+      }
+    }
 
-    <div class="divider"></div>
+    function searchCity() {
+      const v = document.getElementById('cityInput').value.trim();
+      if (!v) return;
+      fetchWeather(v);
+      document.getElementById('cityInput').value = '';
+    }
 
-    <!-- Delivery & Promo -->
-    <div class="opts-row">
-      <div class="form-group">
-        <label>外送距離 (km，店取填0)</label>
-        <input type="number" id="distance" min="0" step="0.1" value="0">
-      </div>
-      <div class="form-group">
-        <label>促銷碼</label>
-        <input type="text" id="promo" placeholder="請輸入優惠碼">
-      </div>
-    </div>
+    window.addEventListener('DOMContentLoaded', () => fetchWeather('Taipei', '台北'));
 
-    <!-- Progress -->
-    <div class="progress-wrap" id="progressWrap">
-      <div class="progress-steps">
-        <div class="step-dot" id="sd1"><div class="dot"></div>需求採集</div>
-        <div class="step-dot" id="sd2"><div class="dot"></div>規則校驗</div>
-        <div class="step-dot" id="sd3"><div class="dot"></div>金額結算</div>
-        <div class="step-dot" id="sd4"><div class="dot"></div>訂單確認</div>
-      </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
-      </div>
-    </div>
+    // ── Progress UI ──
+    function setStep(n) {
+      const wrap = document.getElementById('progressWrap');
+      wrap.classList.add('show');
+      const pct = (n / 4) * 100;
+      document.getElementById('progressFill').style.width = pct + '%';
+      ['sd1', 'sd2', 'sd3', 'sd4'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        el.className = 'step-dot' + (i + 1 < n ? ' done' : i + 1 === n ? ' active' : '');
+      });
+    }
 
-    <button class="submit-btn" onclick="processOrder()">✓ 確認訂單</button>
+    // ── S1–S5: Process Order ──
+    async function processOrder() {
+      const result = document.getElementById('result');
+      result.innerHTML = '';
 
-    <div class="result" id="result"></div>
-  </div>
+      const temp = document.getElementById('temp').value;
+      const distance = parseFloat(document.getElementById('distance').value) || 0;
+      const promo = document.getElementById('promo').value.trim();
+      const item = PRODUCTS[selectedProduct];
 
-</div>
+      // S1
+      setStep(1);
+      await delay(300);
 
-<script>
-// ── Product data ──
-const PRODUCTS = {
-  TEA_RED:  { name:'天下紅茶',  price:40,  emoji:'🍵' },
-  TEA_GRN:  { name:'天下綠茶', price:35,  emoji:'🌿' },
-  MILK_TEA: { name:'特調奶茶', price:55,  emoji:'🧋' }
-};
-let selectedProduct = 'TEA_RED';
-let qty = 1;
-let topBoba = false, topJelly = false;
+      // S2: Validate
+      setStep(2);
+      await delay(400);
 
-function selectProduct(code) {
-  selectedProduct = code;
-  document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('card_' + code).classList.add('selected');
-}
+      if (temp === 'hot' && topBoba) {
+        result.innerHTML = `<div class="alert-err"><strong>❌ 加料限制</strong>熱飲基於品質堅持，暫不提供珍珠加購，建議改選冰飲。</div>`;
+        return;
+      }
+      if (distance > 5) {
+        result.innerHTML = `<div class="alert-err"><strong>❌ 超出服務範圍</strong>目前僅提供 5 公里內外送服務，您的距離 ${distance} km 超出範圍。</div>`;
+        return;
+      }
 
-function changeQty(d) {
-  qty = Math.max(1, qty + d);
-  document.getElementById('qtyVal').textContent = qty;
-}
+      // S3: Calculate
+      setStep(3);
+      await delay(500);
 
-function toggleTopping(t) {
-  if (t === 'boba') {
-    topBoba = !document.getElementById('top_boba').checked;
-    document.getElementById('top_boba').checked = topBoba;
-    document.getElementById('lbl_boba').classList.toggle('checked', topBoba);
-  } else {
-    topJelly = !document.getElementById('top_jelly').checked;
-    document.getElementById('top_jelly').checked = topJelly;
-    document.getElementById('lbl_jelly').classList.toggle('checked', topJelly);
-  }
-}
+      const toppingCount = (topBoba ? 1 : 0) + (topJelly ? 1 : 0);
+      const toppingCost = toppingCount * 10 * qty;
+      const subTotal = item.price * qty + toppingCost;
+      let ship = 0, shipMsg = '';
+      if (distance >= 2 && distance <= 5 && subTotal < 300) { ship = 50; shipMsg = '🛵 外送距離較長，加收運費'; }
+      let discount = 0, promoOk = false;
+      if (promo === 'TENKA_80') { discount = subTotal * 0.2; promoOk = true; }
+      const net = subTotal - discount + ship;
 
-// ── S0: Weather ──
-async function fetchWeather(city, label) {
-  const chip = document.getElementById('weatherChip');
-  chip.className = 'weather-chip loading';
-  chip.textContent = `⏳ 查詢 ${label||city} 中...`;
-  try {
-    const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&format=json`).then(r=>r.json());
-    if (!g.results?.length) throw new Error('notfound');
-    const {latitude, longitude, name} = g.results[0];
-    const cityLabel = label || name;
-    const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&timezone=auto`).then(r=>r.json());
-    const temp = Math.round(w.current.temperature_2m);
-    let rec, icon;
-    if (temp > 28) { icon='🥵'; rec=`炎熱！推薦冰涼特調奶茶 🧋`; }
-    else if (temp >= 15) { icon='😊'; rec=`舒適！推薦天下紅茶或綠茶 🍵`; }
-    else { icon='🥶'; rec=`微涼！推薦暖心熱紅茶 ☕`; }
-    chip.className = 'weather-chip';
-    chip.innerHTML = `<span class="w-temp">🌡️ ${cityLabel} ${temp}°C</span><span class="w-sep">｜</span><span>${icon} ${rec}</span>`;
-  } catch(e) {
-    chip.className = 'weather-chip error';
-    chip.textContent = e.message==='notfound' ? `⚠️ 找不到「${city}」，請用英文名稱` : '⚠️ 氣溫感知失敗，請確認網路';
-  }
-}
+      // S4: Confirm
+      setStep(4);
+      const orderId = 'TK' + Date.now().toString().slice(-6);
+      const toppingStr = [topBoba && '珍珠', topJelly && '椰果'].filter(Boolean).join('、') || '無';
+      const tempText = temp === 'hot' ? '熱飲' : '冰飲';
+      const hotWarn = temp === 'hot' ? `<div class="hot-warn">☕ 服務提醒：熱飲燙口，請小心飲用。</div>` : '';
 
-function searchCity() {
-  const v = document.getElementById('cityInput').value.trim();
-  if (!v) return;
-  fetchWeather(v);
-  document.getElementById('cityInput').value = '';
-}
-
-window.addEventListener('DOMContentLoaded', () => fetchWeather('Taipei','台北'));
-
-// ── Progress UI ──
-function setStep(n) {
-  const wrap = document.getElementById('progressWrap');
-  wrap.classList.add('show');
-  const pct = (n/4)*100;
-  document.getElementById('progressFill').style.width = pct + '%';
-  ['sd1','sd2','sd3','sd4'].forEach((id,i) => {
-    const el = document.getElementById(id);
-    el.className = 'step-dot' + (i+1 < n ? ' done' : i+1 === n ? ' active' : '');
-  });
-}
-
-// ── S1–S5: Process Order ──
-async function processOrder() {
-  const result = document.getElementById('result');
-  result.innerHTML = '';
-
-  const temp = document.getElementById('temp').value;
-  const distance = parseFloat(document.getElementById('distance').value)||0;
-  const promo = document.getElementById('promo').value.trim();
-  const item = PRODUCTS[selectedProduct];
-
-  // S1
-  setStep(1);
-  await delay(300);
-
-  // S2: Validate
-  setStep(2);
-  await delay(400);
-
-  if (temp === 'hot' && topBoba) {
-    result.innerHTML = `<div class="alert-err"><strong>❌ 加料限制</strong>熱飲基於品質堅持，暫不提供珍珠加購，建議改選冰飲。</div>`;
-    return;
-  }
-  if (distance > 5) {
-    result.innerHTML = `<div class="alert-err"><strong>❌ 超出服務範圍</strong>目前僅提供 5 公里內外送服務，您的距離 ${distance} km 超出範圍。</div>`;
-    return;
-  }
-
-  // S3: Calculate
-  setStep(3);
-  await delay(500);
-
-  const toppingCount = (topBoba?1:0)+(topJelly?1:0);
-  const toppingCost = toppingCount*10*qty;
-  const subTotal = item.price*qty + toppingCost;
-  let ship = 0, shipMsg = '';
-  if (distance >= 2 && distance <= 5 && subTotal < 300) { ship = 50; shipMsg = '🛵 外送距離較長，加收運費'; }
-  let discount = 0, promoOk = false;
-  if (promo === 'TENKA_80') { discount = subTotal*0.2; promoOk = true; }
-  const net = subTotal - discount + ship;
-
-  // S4: Confirm
-  setStep(4);
-  const orderId = 'TK' + Date.now().toString().slice(-6);
-  const toppingStr = [topBoba&&'珍珠', topJelly&&'椰果'].filter(Boolean).join('、') || '無';
-  const tempText = temp === 'hot' ? '熱飲' : '冰飲';
-  const hotWarn = temp === 'hot' ? `<div class="hot-warn">☕ 服務提醒：熱飲燙口，請小心飲用。</div>` : '';
-
-  let html = `<div class="order-card">
+      let html = `<div class="order-card">
     <span class="badge">✅ 訂單確認成功</span>
     <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px;">訂單序號：${orderId}</div>
     ${hotWarn}
     <h3>訂單明細</h3>
-    <div class="order-row"><span>${item.emoji} ${item.name}（${tempText}）x${qty}</span><span>$${item.price*qty}</span></div>
-    <div class="order-row"><span>加料（${toppingStr}）</span><span>${toppingCost>0?'+$'+toppingCost:'免費'}</span></div>`;
-  if (promoOk) html += `<div class="order-row promo"><span>✂️ 折扣碼 TENKA_80（八折）</span><span>-$${discount.toFixed(0)}</span></div>`;
-  if (ship > 0) html += `<div class="order-row ship"><span>${shipMsg}</span><span>+$${ship}</span></div>`;
-  html += `<div class="order-row total"><span>應付總額</span><span>$${net.toFixed(0)}</span></div>`;
+    <div class="order-row"><span>${item.emoji} ${item.name}（${tempText}）x${qty}</span><span>$${item.price * qty}</span></div>
+    <div class="order-row"><span>加料（${toppingStr}）</span><span>${toppingCost > 0 ? '+$' + toppingCost : '免費'}</span></div>`;
+      if (promoOk) html += `<div class="order-row promo"><span>✂️ 折扣碼 TENKA_80（八折）</span><span>-$${discount.toFixed(0)}</span></div>`;
+      if (ship > 0) html += `<div class="order-row ship"><span>${shipMsg}</span><span>+$${ship}</span></div>`;
+      html += `<div class="order-row total"><span>應付總額</span><span>$${net.toFixed(0)}</span></div>`;
 
-    // S5: LINE notification (Enhanced Flex Style)
-    const lineMsg = `【天下茶屋】您的訂單已確認！\n序號：${orderId}\n品項：${item.name} (${tempText}) x ${qty}\n應付：$${net.toFixed(0)}\n\n已為您開始製作，感謝訂購！🍵`;
-    
-    html += `
+      // S5: LINE notification (Automatic)
+      const lineMsg = `【天下茶屋】您的訂單已確認！\n序號：${orderId}\n品項：${item.name} (${tempText}) x ${qty}\n應付：$${net.toFixed(0)}\n\n已為您開始製作，感謝訂購！🍵`;
+
+      html += `
       <div class="notice-line" style="background: linear-gradient(145deg, #f0fff4, #e6fffa); border: 1.5px solid #68d391; color: #22543d;">
         <div class="notice-header" style="color: #276749;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-          智慧推播訊息已同步產生
+          智慧推播：已自動嘗試發送
         </div>
         
-        <!-- Flex Message Preview -->
-        <div style="margin: 10px 0; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
-          <div style="background: #00c300; color: white; padding: 8px 12px; font-size: 0.75rem; font-weight: bold; display: flex; justify-content: space-between;">
-            <span>LINE FLEX MESSAGE</span>
-            <span>PREVIEW</span>
-          </div>
-          <div style="padding: 15px;">
-            <div style="font-weight: 900; color: #1a202c; font-size: 1.1rem; margin-bottom: 5px;">天下茶屋 - 訂單確認</div>
-            <div style="font-size: 0.85rem; color: #4a5568; line-height: 1.5;">
-              <div><span style="color: #a0aec0;">品項：</span>${item.name} (${tempText}) x ${qty}</div>
-              <div><span style="color: #a0aec0;">金額：</span><span style="color: #2d5a2d; font-weight: bold;">$${net.toFixed(0)}</span></div>
-              <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #edf2f7; font-style: italic;">"感謝您的訂購，飲品製作中！"</div>
-            </div>
-          </div>
-        </div>
-
         <div class="notice-body" id="lineContent" style="background: rgba(255,255,255,0.8); border: 1px solid #b2f5ea; color: #234e52; font-size: 0.8rem;">${lineMsg}</div>
         
         <div style="display: flex; gap: 8px; margin-top: 12px;">
-          <button class="copy-btn" onclick="copyLineMsg()" style="flex: 1; background: #38a169; padding: 10px; border-radius: 8px; font-weight: 600;">複製內容貼給 AI</button>
-          <button onclick="window.parent.postMessage({type:'TRIGGER_PUSH', msg:'${lineMsg.replace(/\n/g, '\\n')}'}, '*')" style="flex: 1; background: #2f855a; color: white; border: none; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer;">手動觸發真實推播</button>
+          <button class="copy-btn" onclick="copyLineMsg()" style="flex: 1; background: #38a169; padding: 10px; border-radius: 8px; font-weight: 600;">手動複製</button>
+          <button id="autoPushBtn" onclick="sendLineDirectly()" style="flex: 1; background: #2f855a; color: white; border: none; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer;">立即再次發送</button>
         </div>
-        <div style="font-size: 0.65rem; color: #4a5568; margin-top: 6px; text-align: center;">提示：若 AI 沒自動推送，請點擊「複製」後貼給 AI。</div>
+        <div id="pushStatus" style="font-size: 0.65rem; color: #4a5568; margin-top: 6px; text-align: center;">正在同步至 LINE...</div>
       </div>
     </div>`;
 
-    result.innerHTML = html;
-  }
+      result.innerHTML = html;
 
-function copyLineMsg() {
-  const content = document.getElementById('lineContent').innerText;
-  navigator.clipboard.writeText(content);
-  alert('訊息已複製！請貼給 AI 助理來幫您完成推播。');
-}
+      // 自動觸發發送 (這是在前端模擬自動化)
+      setTimeout(() => {
+        sendLineDirectly();
+      }, 500);
+    }
+
+    async function sendLineDirectly() {
+      const statusEl = document.getElementById('pushStatus');
+      const btn = document.getElementById('autoPushBtn');
+      const msg = document.getElementById('lineContent').innerText;
+
+      statusEl.innerText = '🚀 正在通過 AI 代理傳輸...';
+
+      // 這裡我們模擬與 AI 代理的對話。
+      // 在 Antigravity 環境中，我們可以發送 postMessage 讓父視窗處理
+      window.parent.postMessage({
+        type: 'TRIGGER_PUSH',
+        msg: msg
+      }, '*');
+
+      statusEl.innerText = '✅ 已通知 AI 助理執行推播 (請查看 AI 視窗)';
+      statusEl.style.color = '#2f855a';
+      statusEl.style.fontWeight = 'bold';
+    }
+
+    function copyLineMsg() {
+      const content = document.getElementById('lineContent').innerText;
+      navigator.clipboard.writeText(content);
+      alert('訊息已複製！請貼給 AI 助理來幫您完成推播。');
+    }
 
 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-</script>
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+  </script>
 </body>
+
 </html>
