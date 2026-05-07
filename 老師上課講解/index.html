@@ -611,20 +611,44 @@ async function processOrder() {
   if (ship > 0) html += `<div class="order-row ship"><span>${shipMsg}</span><span>+$${ship}</span></div>`;
   html += `<div class="order-row total"><span>應付總額</span><span>$${net.toFixed(0)}</span></div>`;
 
-  // S5: LINE notification (Real simulation)
-  const lineMsg = `【天下茶屋】您的訂單已確認！\n序號：${orderId}\n品項：${item.name} (${tempText}) x ${qty}\n應付：$${net.toFixed(0)}\n\n已為您開始製作，感謝訂購！🍵`;
-  
-  html += `
-    <div class="notice-line">
-      <div class="notice-header">🔔 智慧推播內容已產生</div>
-      <div class="notice-body" id="lineContent">${lineMsg}</div>
-      <button class="copy-btn" onclick="copyLineMsg()">複製訊息傳給 AI 助理</button>
-      <div style="font-size: 0.7rem; color: #718096; margin-top: 4px;">提示：點擊複製後貼給左側 AI 助理，即可觸發真實推播。</div>
-    </div>
-  </div>`;
+    // S5: LINE notification (Enhanced Flex Style)
+    const lineMsg = `【天下茶屋】您的訂單已確認！\n序號：${orderId}\n品項：${item.name} (${tempText}) x ${qty}\n應付：$${net.toFixed(0)}\n\n已為您開始製作，感謝訂購！🍵`;
+    
+    html += `
+      <div class="notice-line" style="background: linear-gradient(145deg, #f0fff4, #e6fffa); border: 1.5px solid #68d391; color: #22543d;">
+        <div class="notice-header" style="color: #276749;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          智慧推播訊息已同步產生
+        </div>
+        
+        <!-- Flex Message Preview -->
+        <div style="margin: 10px 0; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+          <div style="background: #00c300; color: white; padding: 8px 12px; font-size: 0.75rem; font-weight: bold; display: flex; justify-content: space-between;">
+            <span>LINE FLEX MESSAGE</span>
+            <span>PREVIEW</span>
+          </div>
+          <div style="padding: 15px;">
+            <div style="font-weight: 900; color: #1a202c; font-size: 1.1rem; margin-bottom: 5px;">天下茶屋 - 訂單確認</div>
+            <div style="font-size: 0.85rem; color: #4a5568; line-height: 1.5;">
+              <div><span style="color: #a0aec0;">品項：</span>${item.name} (${tempText}) x ${qty}</div>
+              <div><span style="color: #a0aec0;">金額：</span><span style="color: #2d5a2d; font-weight: bold;">$${net.toFixed(0)}</span></div>
+              <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #edf2f7; font-style: italic;">"感謝您的訂購，飲品製作中！"</div>
+            </div>
+          </div>
+        </div>
 
-  result.innerHTML = html;
-}
+        <div class="notice-body" id="lineContent" style="background: rgba(255,255,255,0.8); border: 1px solid #b2f5ea; color: #234e52; font-size: 0.8rem;">${lineMsg}</div>
+        
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <button class="copy-btn" onclick="copyLineMsg()" style="flex: 1; background: #38a169; padding: 10px; border-radius: 8px; font-weight: 600;">複製內容貼給 AI</button>
+          <button onclick="window.parent.postMessage({type:'TRIGGER_PUSH', msg:'${lineMsg.replace(/\n/g, '\\n')}'}, '*')" style="flex: 1; background: #2f855a; color: white; border: none; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer;">手動觸發真實推播</button>
+        </div>
+        <div style="font-size: 0.65rem; color: #4a5568; margin-top: 6px; text-align: center;">提示：若 AI 沒自動推送，請點擊「複製」後貼給 AI。</div>
+      </div>
+    </div>`;
+
+    result.innerHTML = html;
+  }
 
 function copyLineMsg() {
   const content = document.getElementById('lineContent').innerText;
