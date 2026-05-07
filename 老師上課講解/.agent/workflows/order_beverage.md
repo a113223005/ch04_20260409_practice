@@ -2,6 +2,15 @@
 description: 
 ---
 
+---
+功能名稱: 智慧點餐 SOP 流程 (Order Beverage Workflow)
+版本編號: v1.0.0
+修改日期: 2026-04-23
+功能類型: 操作流程 / SOP
+內容描述: 定義天下茶屋智慧 App 自「App 啟動」到「訂單送出」的完整操作流程，串接 Persona、Rules、Skills 與 Knowledge 四大元件。
+---
+
+
 # 工作流程：天下茶屋飲品點購程序 (Order SOP)
 
 ## 1. 基礎實作規劃 (人類好閱讀版)
@@ -11,6 +20,16 @@ description:
 ## 進階實作規格
 
 為確保流程之一致性，定義下列狀態位移：
+
+### 狀態轉換表 (State Transition Matrix)
+
+| 狀態 (State) | 觸發事件 (Trigger) | 執行動作 (Action) | 下一狀態 |
+| :--- | :--- | :--- | :--- |
+| **S0** | App 啟動 | 調用 `get_weather_skill` → 套用 `weather_recommendation` → 生成開場白 | S1 |
+| **S1** | 顧客選品項 | 記錄 `item_code, qty, temp` | S2 |
+| **S2** | 送出選擇 | 執行 `delivery_threshold` 校驗 | 通過 → S3；失敗 → 回 S1 |
+| **S3** | 進入結帳 | 調用 `calculate_total` 計算 `final_total` | S4 |
+| **S4** | 顧客確認 | 產出訂單編號並儲存 | 結束 |
 
 ### 系統執行狀態表 (State Transitions)
 
