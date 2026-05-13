@@ -800,6 +800,15 @@
     }
 
     // ── S0: Weather ──
+    // 偵測字串是否含有亂碼（非ASCII、非中日韓可顯示字元的奇怪符號）
+    function isGarbled(str) {
+      // 若字串含有替換字元 U+FFFD，或大量非可見字元，視為亂碼
+      if (str.includes('\uFFFD')) return true;
+      // 計算非ASCII非中日韓字元的比例
+      const suspicious = (str.match(/[^\x00-\x7F\u4E00-\u9FFF\u3040-\u30FF\uAC00-\uD7AF\u0080-\u024F\s]/g) || []).length;
+      return suspicious / str.length > 0.3;
+    }
+
     async function fetchWeather(city, label) {
       const chip = document.getElementById('weatherChip');
       chip.className = 'weather-chip loading';
@@ -809,8 +818,16 @@
         if (!g.results?.length) throw new Error('notfound');
         const { latitude, longitude, name } = g.results[0];
         const cityLabel = label || name;
+
+        // 檢查城市名稱是否為亂碼
+        if (isGarbled(cityLabel)) throw new Error('garbled');
+
         const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&timezone=auto`).then(r => r.json());
         const temp = Math.round(w.current.temperature_2m);
+
+        // 確認溫度是合理數字
+        if (typeof temp !== 'number' || isNaN(temp)) throw new Error('garbled');
+
         let rec, icon;
         if (temp > 28) { icon = '🥵'; rec = `炎熱！推薦冰涼特調奶茶 🧋`; }
         else if (temp >= 15) { icon = '😊'; rec = `舒適！推薦天下紅茶或綠茶 🍵`; }
@@ -819,13 +836,27 @@
         chip.innerHTML = `<span class="w-temp">🌡️ ${cityLabel} ${temp}°C</span><span class="w-sep">｜</span><span>${icon} ${rec}</span>`;
       } catch (e) {
         chip.className = 'weather-chip error';
-        chip.textContent = e.message === 'notfound' ? `⚠️ 找不到「${city}」，請用英文名稱` : '⚠️ 氣溫感知失敗，請確認網路';
+        if (e.message === 'notfound') {
+          chip.textContent = `⚠️ 找不到「${city}」，請用英文名稱`;
+        } else if (e.message === 'garbled') {
+          chip.textContent = `⚠️ 查詢不成功，無法取得城市資訊`;
+        } else {
+          chip.textContent = '⚠️ 氣溫感知失敗，請確認網路';
+        }
       }
     }
 
     function searchCity() {
       const v = document.getElementById('cityInput').value.trim();
       if (!v) return;
+      // 輸入本身若含亂碼直接拒絕
+      if (isGarbled(v)) {
+        const chip = document.getElementById('weatherChip');
+        chip.className = 'weather-chip error';
+        chip.textContent = '⚠️ 查詢不成功，請輸入有效的城市名稱（建議用英文）';
+        document.getElementById('cityInput').value = '';
+        return;
+      }
       fetchWeather(v);
       document.getElementById('cityInput').value = '';
     }
@@ -930,29 +961,54 @@
       }, 500);
     }
 
+    // LINE Messaging API 設定（從後端環境變數讀取，前端透過 /line-push 代理）
+    const LINE_TOKEN = 'Ym/hz/ML3Jla/fWED68nGM4ZxnpV6WcKzx/CrEphon/WmNRGtvq2M1AFLVdG3VhSRI9PvhAal5Fi53bDsvTj+PS6fD7/uSBaPIGCEONIhX5UHSVn9Qw1Jv7NyXLxl5KnWA0+I1QIsFKntzNjUN6HZgdB04t89/1O/w1cDnyilFU=';
+    const LINE_USER_ID = 'Ue90db3d3945cc5bc632b7b92e8b82c59';
+
     async function sendLineDirectly() {
       const statusEl = document.getElementById('pushStatus');
       const btn = document.getElementById('autoPushBtn');
       const msg = document.getElementById('lineContent').innerText;
 
-      statusEl.innerText = '🚀 正在通過 AI 代理傳輸...';
+      if (btn) btn.disabled = true;
+      statusEl.innerText = '🚀 正在發送 LINE 推播...';
+      statusEl.style.color = '#4a5568';
+      statusEl.style.fontWeight = 'normal';
 
-      // 這裡我們模擬與 AI 代理的對話。
-      // 在 Antigravity 環境中，我們可以發送 postMessage 讓父視窗處理
-      window.parent.postMessage({
-        type: 'TRIGGER_PUSH',
-        msg: msg
-      }, '*');
+      try {
+        const res = await fetch('https://api.line.me/v2/bot/message/push', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LINE_TOKEN}`
+          },
+          body: JSON.stringify({
+            to: LINE_USER_ID,
+            messages: [{ type: 'text', text: msg }]
+          })
+        });
 
-      statusEl.innerText = '✅ 已通知 AI 助理執行推播 (請查看 AI 視窗)';
-      statusEl.style.color = '#2f855a';
-      statusEl.style.fontWeight = 'bold';
+        if (res.ok) {
+          statusEl.innerText = '✅ LINE 推播發送成功！請至 LINE 查看訂單通知。';
+          statusEl.style.color = '#2f855a';
+          statusEl.style.fontWeight = 'bold';
+        } else {
+          const err = await res.json();
+          statusEl.innerText = `⚠️ 發送失敗（${res.status}）：${err.message || '請確認 Token 是否有效'}`);
+          statusEl.style.color = '#c05621';
+        }
+      } catch (e) {
+        statusEl.innerText = '⚠️ 網路錯誤，無法連線至 LINE 伺服器';
+        statusEl.style.color = '#c05621';
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     }
 
     function copyLineMsg() {
       const content = document.getElementById('lineContent').innerText;
       navigator.clipboard.writeText(content);
-      alert('訊息已複製！請貼給 AI 助理來幫您完成推播。');
+      alert('訊息已複製！');
     }
 
 
