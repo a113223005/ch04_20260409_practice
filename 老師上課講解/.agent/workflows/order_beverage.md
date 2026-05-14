@@ -29,7 +29,9 @@ description:
 | **S1** | 顧客選品項 | 記錄 `item_code, qty, temp` | S2 |
 | **S2** | 送出選擇 | 執行 `delivery_threshold` 校驗 | 通過 → S3；失敗 → 回 S1 |
 | **S3** | 進入結帳 | 調用 `calculate_total` 計算 `final_total` | S4 |
-| **S4** | 顧客確認 | 產出訂單編號並儲存 | 結束 |
+| **S4** | 顧客確認 | 產出訂單編號並結帳 | S5 |
+| **S5** | 自動通知 | 執行 `line_messaging_skill` 進行推播 | S6 |
+| **S6** | 雲端存檔 | 執行 `db_storage_skill` 寫入資料庫 | 結束 |
 
 ### 系統執行狀態表 (State Transitions)
 
@@ -39,4 +41,5 @@ description:
 | **S2** | **Validate_Policy** | 執行業務規則校驗 | 是否合規標籤 (True/False) |
 | **S3** | **Calc_Price** | 執行金額自動計算 | 最終實付總額 (Net_Total) |
 | **S4** | **Confirm_Order** | 產出訂單摘要 | 支付連結、訂單序號 |
-| **S5（自動通知）** | 先通過 `notification_consent` 檢查權限，通過後將 Persona 產生的「推播內容」傳遞給 `line_messaging_skill` 進行發送 |
+| **S5** | **Line_Notify** | 通過 `notification_consent` 檢查權限後，將 Persona 產生的推播內容傳遞給 `line_messaging_skill` 進行發送 | 推播結果狀態 |
+| **S6** | **Persistence** | 當訂單確認且結帳成功後，呼叫 `db_storage_skill`，將本次交易的所有品項存至 Turso 雲端 | 回饋使用者「您的訂單已安全存入雲端資料庫」 |

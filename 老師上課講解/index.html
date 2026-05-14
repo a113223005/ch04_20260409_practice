@@ -7,6 +7,11 @@
   <title>天下茶屋 | 智慧點餐系統</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap"
     rel="stylesheet">
+  <!-- 引入 LibSQL Web Client SDK 供前端直連 Turso 使用 -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@libsql/client/web';
+    window.createClient = createClient;
+  </script>
   <style>
     :root {
       --green-dark: #1a3a1a;
@@ -836,10 +841,8 @@
         chip.innerHTML = `<span class="w-temp">🌡️ ${cityLabel} ${temp}°C</span><span class="w-sep">｜</span><span>${icon} ${rec}</span>`;
       } catch (e) {
         chip.className = 'weather-chip error';
-        if (e.message === 'notfound') {
-          chip.textContent = `⚠️ 找不到「${city}」，請用英文名稱`;
-        } else if (e.message === 'garbled') {
-          chip.textContent = `⚠️ 查詢不成功，無法取得城市資訊`;
+        if (e.message === 'notfound' || e.message === 'garbled') {
+          chip.textContent = `⚠️ 無該查詢城市字樣`;
         } else {
           chip.textContent = '⚠️ 氣溫感知失敗，請確認網路';
         }
@@ -849,11 +852,11 @@
     function searchCity() {
       const v = document.getElementById('cityInput').value.trim();
       if (!v) return;
-      // 輸入本身若含亂碼直接拒絕
-      if (isGarbled(v)) {
+      // 輸入本身若含亂碼或純數字直接拒絕
+      if (isGarbled(v) || /^\d+$/.test(v)) {
         const chip = document.getElementById('weatherChip');
         chip.className = 'weather-chip error';
-        chip.textContent = '⚠️ 查詢不成功，請輸入有效的城市名稱（建議用英文）';
+        chip.textContent = '⚠️ 無該查詢城市字樣';
         document.getElementById('cityInput').value = '';
         return;
       }
@@ -951,13 +954,27 @@
         </div>
         <div id="pushStatus" style="font-size: 0.65rem; color: #4a5568; margin-top: 6px; text-align: center;">正在同步至 LINE...</div>
       </div>
+      
+      <div class="notice-line" style="margin-top: 10px; background: linear-gradient(145deg, #f0f4ff, #e6eefa); border: 1.5px solid #68a1d3; color: #223f54; border-radius: 8px; padding: 12px;">
+        <div class="notice-header" style="color: #274767; font-weight: bold; margin-bottom: 5px;">
+          ☁️ 雲端存檔狀態 (Turso)
+        </div>
+        <div id="dbStatus" style="font-size: 0.8rem; text-align: center;">⏳ 正在安全寫入訂單資料...</div>
+      </div>
     </div>`;
 
       result.innerHTML = html;
 
-      // 自動觸發發送 (這是在前端模擬自動化)
+      // 自動觸發發送與存檔 (這是在前端模擬自動化)
       setTimeout(() => {
         sendLineDirectly();
+        saveOrderToCloud({
+          orderId: orderId,
+          itemName: item.name,
+          qty: qty,
+          unitPrice: item.price,
+          subtotal: net
+        });
       }, 500);
     }
 
@@ -976,7 +993,7 @@
       statusEl.style.fontWeight = 'normal';
 
       try {
-        const res = await fetch('https://api.line.me/v2/bot/message/push', {
+        const res = await fetch('https://corsproxy.io/?https://api.line.me/v2/bot/message/push', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -994,7 +1011,7 @@
           statusEl.style.fontWeight = 'bold';
         } else {
           const err = await res.json();
-          statusEl.innerText = `⚠️ 發送失敗（${res.status}）：${err.message || '請確認 Token 是否有效'}`);
+          statusEl.innerText = `⚠️ 發送失敗（${res.status}）：${err.message || '請確認 Token 是否有效'}`;
           statusEl.style.color = '#c05621';
         }
       } catch (e) {
@@ -1009,6 +1026,53 @@
       const content = document.getElementById('lineContent').innerText;
       navigator.clipboard.writeText(content);
       alert('訊息已複製！');
+    }
+
+    // ── S6: 雲端存檔功能 ──
+    async function saveOrderToCloud(orderData) {
+      const dbStatusEl = document.getElementById('dbStatus');
+      if (!window.createClient) {
+        dbStatusEl.innerText = '❌ 錯誤：LibSQL SDK 未成功載入';
+        dbStatusEl.style.color = '#c05621';
+        return;
+      }
+      
+      try {
+        const dbClient = window.createClient({
+          url: "libsql://tenka-tea-db-a113223005.aws-ap-northeast-1.turso.io",
+          authToken: "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3Nzg3NTg4NjQsImlkIjoiMDE5ZTI2NDktZWYwMS03MmUzLTg4OTgtYTM3ODEwNDRkYmVmIiwicmlkIjoiMTNmZGNlMTEtYjcxNi00ZGU4LTk4MmQtNWJiMWM1YmUwM2Q4In0.hmkpLUC8SgXFSPwGQwiZJkeuPJJEitu5xnq1TzFMhTImOTeyb-AR_-2QDH00SaByiuYzrK7ZUpeZXg5laXWZCg"
+        });
+
+        const { orderId, itemName, qty, unitPrice, subtotal } = orderData;
+        
+        // 確保 orders 表格存在
+        await dbClient.execute(`
+          CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id TEXT NOT NULL,
+            item_name TEXT NOT NULL,
+            qty INTEGER NOT NULL,
+            unit_price INTEGER NOT NULL,
+            subtotal INTEGER NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `);
+
+        // 寫入訂單資料
+        await dbClient.execute({
+          sql: "INSERT INTO orders (order_id, item_name, qty, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)",
+          args: [orderId, itemName, qty, unitPrice, subtotal]
+        });
+        
+        console.log('✅ 訂單已安全存入雲端資料庫');
+        dbStatusEl.innerText = '✅ 訂單已安全存入雲端資料庫';
+        dbStatusEl.style.color = '#2f855a';
+        dbStatusEl.style.fontWeight = 'bold';
+      } catch (error) {
+        console.error('寫入雲端資料庫失敗:', error);
+        dbStatusEl.innerText = '⚠️ 寫入雲端資料庫失敗，請確認網路與 Token 設定';
+        dbStatusEl.style.color = '#c05621';
+      }
     }
 
 
