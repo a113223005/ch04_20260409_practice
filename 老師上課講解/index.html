@@ -1036,7 +1036,7 @@
         dbStatusEl.style.color = '#c05621';
         return;
       }
-      
+
       try {
         const dbClient = window.createClient({
           url: "libsql://tenka-tea-db-a113223005.aws-ap-northeast-1.turso.io",
@@ -1044,7 +1044,7 @@
         });
 
         const { orderId, itemName, qty, unitPrice, subtotal } = orderData;
-        
+
         // 確保 orders 表格存在
         await dbClient.execute(`
           CREATE TABLE IF NOT EXISTS orders (
@@ -1063,7 +1063,7 @@
           sql: "INSERT INTO orders (order_id, item_name, qty, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)",
           args: [orderId, itemName, qty, unitPrice, subtotal]
         });
-        
+
         console.log('✅ 訂單已安全存入雲端資料庫');
         dbStatusEl.innerText = '✅ 訂單已安全存入雲端資料庫';
         dbStatusEl.style.color = '#2f855a';
