@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天下茶屋 Icon 轉檔工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #6a9e60;
+            margin-bottom: 10px;
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #999;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .preview-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .preview-label {
+            color: #666;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .preview-box {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        #svgImage {
+            width: 192px;
+            height: 192px;
+            display: none;
+        }
+        
+        canvas {
+            width: 192px;
+            height: 192px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            display: block;
+        }
+        
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 20px;
+        }
+        
+        .status.success {
+            color: #52c41a;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .status.loading {
+            color: #6a9e60;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .download-btn {
+            background: #6a9e60;
+            color: white;
+        }
+        
+        .download-btn:hover {
+            background: #5a8e50;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(106, 158, 96, 0.3);
+        }
+        
+        .download-btn:active {
+            transform: translateY(0);
+        }
+        
+        .download-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .refresh-btn {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .refresh-btn:hover {
+            background: #e8e8e8;
+        }
+        
+        .info-box {
+            background: #f0f5f0;
+            border-left: 4px solid #6a9e60;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍵 天下茶屋 Icon 轉檔工具</h1>
+        <p class="subtitle">將 SVG 圖示轉換為 PNG 格式</p>
+        
+        <div class="preview-section">
+            <div class="preview-label">📷 預覽（192×192）</div>
+            <div class="preview-box">
+                <img id="svgImage" src="icon.svg" alt="Tea Icon">
+                <canvas id="canvas" width="192" height="192"></canvas>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+        
+        <div class="button-group">
+            <button class="download-btn" id="downloadBtn">⬇️ 下載 icon.png</button>
+            <button class="refresh-btn" id="refreshBtn">🔄 重新載入</button>
+        </div>
+        
+        <div class="info-box">
+            <strong>✓ 功能說明</strong><br>
+            • 此工具使用 Canvas API 將 SVG 轉換為 PNG<br>
+            • 解析度：192×192 像素<br>
+            • 格式：標準 PNG 檔案，支援所有現代瀏覽器
+        </div>
+    </div>
+    
+    <img id="svgImage" src="icon.svg" alt="Tea Icon" style="display:none;">
+    <canvas id="canvas" width="192" height="192" style="display:none;"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const svgImage = document.getElementById('svgImage');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const statusDiv = document.getElementById('status');
+        
+        function loadSvg() {
+            statusDiv.textContent = '⏳ 正在載入圖片...';
+            statusDiv.className = 'status loading';
+            downloadBtn.disabled = true;
+            
+            // 使用新的 Image 實例確保重新載入
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            
+            img.onload = function() {
+                // 清空 canvas
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, 192, 192);
+                
+                // 繪製圖片到 canvas
+                ctx.drawImage(img, 0, 0, 192, 192);
+                
+                statusDiv.textContent = '✓ 圖片已載入，準備下載';
+                statusDiv.className = 'status success';
+                downloadBtn.disabled = false;
+            };
+            
+            img.onerror = function() {
+                statusDiv.textContent = '✗ 無法載入圖片，請確認 icon.svg 檔案存在';
+                statusDiv.className = 'status';
+                statusDiv.style.color = '#ff4d4f';
+                downloadBtn.disabled = true;
+            };
+            
+            img.src = 'icon.svg?' + new Date().getTime(); // 加入時間戳確保重新載入
+        }
+        
+        function downloadPNG() {
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'icon.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                statusDiv.textContent = '✓ 下載完成！';
+                statusDiv.className = 'status success';
+            }, 'image/png');
+        }
+        
+        downloadBtn.addEventListener('click', downloadPNG);
+        refreshBtn.addEventListener('click', loadSvg);
+        
+        // 頁面載入時自動載入 SVG
+        window.addEventListener('load', loadSvg);
+    </script>
+</body>
+</html>

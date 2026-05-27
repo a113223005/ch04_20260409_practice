@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <!-- 白色背景 -->
+  <rect width="192" height="192" fill="white"/>
+  
+  <!-- 茶杯主體 -->
+  <path d="M 48 60 L 52 140 Q 52 150 60 150 L 132 150 Q 140 150 140 140 L 144 60 Z" 
+        fill="none" stroke="#6a9e60" stroke-width="4" stroke-linejoin="round"/>
+  
+  <!-- 杯子把手 -->
+  <path d="M 140 80 Q 160 80 160 100 Q 160 120 140 120" 
+        fill="none" stroke="#6a9e60" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- 茶水 - 漸層效果用矩形 -->
+  <rect x="54" y="100" width="84" height="40" fill="#6a9e60" opacity="0.6" rx="2"/>
+  
+  <!-- 茶葉裝飾線 -->
+  <circle cx="70" cy="105" r="2" fill="#6a9e60" opacity="0.8"/>
+  <circle cx="96" cy="110" r="2" fill="#6a9e60" opacity="0.8"/>
+  <circle cx="122" cy="105" r="2" fill="#6a9e60" opacity="0.8"/>
+  
+  <!-- 蒸氣線條 -->
+  <path d="M 70 55 Q 72 45 70 35" fill="none" stroke="#6a9e60" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 96 55 Q 98 45 96 35" fill="none" stroke="#6a9e60" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 122 55 Q 124 45 122 35" fill="none" stroke="#6a9e60" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- 品牌標識 - 圓形邊框 -->
+  <circle cx="96" cy="96" r="88" fill="none" stroke="#6a9e60" stroke-width="1.5" opacity="0.3"/>
+</svg>
